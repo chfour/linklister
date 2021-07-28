@@ -9,6 +9,7 @@ def recurse_find(url: str, file, verbose=False, user_agent=DEFAULT_USERAGENT, in
     if verbose: print(f"* HEAD {url} | code {r.status_code} type {r.headers.get('content-type', 'unknown')!r}", file=sys.stderr)
     if not r.ok: return
     file.write(f"{url}\n")
+    file.flush()
 
     if r.headers.get("content-type", None).startswith("text/html"):
         r = requests.get(url, headers={"User-Agent": user_agent})
