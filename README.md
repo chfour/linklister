@@ -3,9 +3,12 @@
 A "quick and dirty" script to list files on an HTTP server by crawling through file listings.
 Useful for [open directories](https://www.reddit.com/r/opendirectories/).
 
+For each file/directory, it first sends a HEAD request to check the filetype.
+If the type is `text/html`, it sends a GET request then looks for `<a>` tags on the page, and repeats the process for each one.
+
 ## options
 
-`linklister.py [-h] [-o OUTPUT] [-q] [-u USERAGENT] start_url`
+`linklister.py [-h] [-o OUTPUT] [-q] [-u USERAGENT] [-i INTERVAL] start_url`
 
 * `-h`, `--help`: show help message
 * `-o OUTPUT`, `--output OUTPUT`: output file, can be `-` for stdout and that's also the default
