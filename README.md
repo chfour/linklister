@@ -11,3 +11,4 @@ Useful for [open directories](https://www.reddit.com/r/opendirectories/).
 * `-o OUTPUT`, `--output OUTPUT`: output file, can be `-` for stdout and that's also the default
 * `-q`, `--quiet`: be quiet and don't print anything to stderr
 * `-u USER_AGENT`, `--user-agent USER_AGENT`: set the user agent to something other than `linklister <github.com/chfour/linklister>`
+* `-i INTERVAL`, `--interval INTERVAL`: time in seconds to wait before requests, default is 0.1 sec
