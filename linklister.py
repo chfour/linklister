@@ -1,25 +1,30 @@
 #!/usr/bin/env python3
 import argparse, sys, requests, time
 from bs4 import BeautifulSoup
+from urllib.parse import urlparse, urljoin
 
 DEFAULT_USERAGENT = "linklister <github.com/chfour/linklister>"
 
 def recurse_find(url: str, file, verbose=False, user_agent=DEFAULT_USERAGENT, interval=0.1):
     r = requests.head(url, headers={"User-Agent": user_agent})
-    if verbose: print(f"* HEAD {url} | code {r.status_code} type {r.headers.get('content-type', 'unknown')!r}", file=sys.stderr)
+    if verbose: print(f"* HEAD {url}\n  code {r.status_code} type {r.headers.get('content-type', 'unknown')!r}", file=sys.stderr)
     if not r.ok: return
     file.write(f"{url}\n")
     file.flush()
 
     if r.headers.get("content-type", None).startswith("text/html"):
         r = requests.get(url, headers={"User-Agent": user_agent})
-        if verbose: print(f"* GET {url} | code {r.status_code}", file=sys.stderr)
+        if verbose: print(f"* GET {url}\n  code {r.status_code}", file=sys.stderr)
         soup = BeautifulSoup(r.text, features="html5lib")
         links = soup.find_all("a")
-        if verbose: print(f"* {len(links)} <a> tags", file=sys.stderr)
+        if verbose: print(f"  {len(links)} <a> tags", file=sys.stderr)
         for link in links:
-            if link["href"] in ["../", ".."]: continue
-            recurse_find(url + link["href"], file, verbose, user_agent, interval)
+            location = urlparse(link["href"])
+            # print(f" > {location}", file=sys.stderr)
+            if location.scheme not in ["http", "https", ""]: continue
+            if location.netloc not in [urlparse(url).netloc, ""]: continue
+            if location.path in ["../", ".."]: continue
+            recurse_find(urljoin(url, link["href"]), file, verbose, user_agent, interval)
             time.sleep(interval)
 
 if __name__ == "__main__":
